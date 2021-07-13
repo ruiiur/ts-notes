@@ -1,0 +1,86 @@
+一.在es5中function的定义
+1. 函数声明
+   function work() {
+     console.log('钱来钱来');
+   }
+2. 函数表达式
+   var work = function() {
+     console.log('钱来钱来');
+   }
+3. 构造函数// 等讲到class的时候再拆开讲
+   function Person(name) {
+     this.name = name;
+   }
+
+
+ --构造函数（构造类）和普通函数的区别是什么？
+   就{}内部包含的代码而言，它们都是函数，都是实现了{}内部包含的代码所代表的功能 但对外而言，构造函数代表的是构造，
+   代表了当这个函数被new时所应当执行的相关代码，只要任何时候实例化了一个类，这个类对应的构造函数包含的代码就会被执行
+   而方法（就是所说的普通函数）代表的就是当被调用时才执行的函数 然后构造函数和方法都有重构的概念
+   另外除了上述函数外，还有析构函数，静态构造函数，
+   a.构造函数一定要和关键词new一起使用；
+   b.语法规定，构造函数的函数名称第一个字母必须大写，使用大驼峰命名法；
+   c.用于给实例化对象定义属性和方法的语法,与一般函数不同
+   
+   
+二.在es6中的function
+  es6 新增了箭头函数
+  ---es6箭头函数内部没有this,使用时会上朔寻找最近的this
+  ---不可以做构造函数,不能使用new命令,因为没有this
+  ---函数体内没有arguments,可以使用rest参数代替
+  ---不能用yield,不能使用generator函数
+  let work = () => {
+    console.log('钱来钱来');
+  }
+  let obj = {
+    aaa: '123',
+    arrows: () => {
+        console.log('arrows',this);
+    },
+    func: function () {
+        console.log('func',this);
+    }
+  }
+  obj.arrows();   // window
+  obj.func();     // obj
+  
+  
+三.ts中的function
+1.定义函数传参 (调用时，类型不一致会报错）
+  function work(name: string): string {
+    return `${name}在工作`;
+  }
+2.可选参数的定义
+  function work(name: string, age?: number): string {
+    return `${name}在工作`;
+  }
+  // 可选参数要放在最后,方法的形参和实参可以不一样
+3.没有返回值的函数定义
+  function work(): void {
+    console.log('11');
+  }
+4.剩余参数（rest es6中就存在啦）
+  function num(a:number, b:number, ...rest:number[]) {
+   console.log(a, b); // 1 2
+   console.log(rest); // [3,4,5,6,7,9]
+  }
+  num(1,2,3,4,5,6,7,9);
+5.默认参数（es5中没法设置默认参数，es6和ts中都可以设置默认参数）
+  function work(name: string, age: number = 20): string {
+    return `${name}在工作`;
+  }
+  // 设置了默认参数时，可以在传参时不传
+6.函数的重载（es5和es6中是没有的,但是可以通过arguments来模拟，这里就不举例啦）
+  function getInfo(name: string): string;
+  function getInfo(age: number): number;
+  function getInfo(str: any): any {
+    if (typeof str=='string') {
+      return '我叫---'+str;    
+    }
+    if (typeof str=='number') {
+      return '我的年龄---'+str
+    }
+  }
+----其实感觉这里的重载也没什么意义
+  
+  
