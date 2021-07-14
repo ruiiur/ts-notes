@@ -25,6 +25,12 @@
   console.log(Person.prototype.constructor === Person); // true 指向构造函数的原型上的 constructor 属性， 指向构造函数本身
   console.log(c.constructor === Person); // 在 new 一个新对象时都会默认生成一个constructor，并且该属性都指向构造函数
   
+---构造函数生成实例的过程
+a.使用关键字new 创建一个实例对象的时候，相当于隐式的调用了 new Object() 创建了一个新对象；
+b.将构造函数的作业域给新对象，也就是函数体内的this就代表new Object()出来的对象；
+c.执行构造函数；
+d.返回新的对象。
+  
 ---es5 中的继承
   a.对象冒充继承（构造函数继承）
   可以继承构造属性里面的属性和方法
