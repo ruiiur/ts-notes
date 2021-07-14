@@ -1,0 +1,106 @@
+一.es6中的class
+class Person { // 类名首字母要大写
+    // constructor中定义的属性可以称为实例属性（即定义在this对象上），
+    // constructor外声明的属性都是定义在原型上的，可以称为原型属性（即定义在class上)。
+    constructor(name) { //构造函数，实例化一个对象的时候调用，用来接收参数
+        this.name = name; // this指向实例对象
+    }
+    say() { // class中的方法，不需要关键字function，也不要用逗号分隔，否则会报错
+        return `${this.name}挣大钱`;
+    }
+    sing() {
+        return `${this.name}在唱歌`;
+    }
+}
+let c = new Person('小红');
+console.log(c.name); // 小红
+console.log(c.say());  // 小红挣大钱
+console.log(c.sing());  // 小红在唱歌
+console.log(typeof Person); // function 由此看出es6中的class实际上就是构造函数的另一种写法，语法糖
+console.log(Person===Person.prototype.constructor); // true
+console.log(c.hasOwnProperty('name')); // true 
+// hasOwnProperty()函数用于判断属性是否是实例属性。其结果是一个布尔值， true说明是实例属性，false说明不是实例属性。
+console.log('say' in c); // true
+// in操作符会在通过对象能够访问给定属性时返回true,无论该属性存在于实例中还是原型中。
+
+--- Person 类的所有实例共享一个原型对象，它们的原型都是 Person.prototype，所以实例的 __proto__ 属性是相等的,可以通过此属性添加方法，
+但是会影响所以实例，所以不推荐使用，尽量避免。
+
+
+---constructor 方法如果没有显式定义，会隐式生成一个 constructor 方法。
+所以即使你没有添加构造函数，构造函数也是存在的。
+constructor方法默认返回实例对象this，但是也可以指定constructor方法返回一个全新的对象，让返回的实例对象不是该类的实例。
+class Desk {
+    constructor() {
+        this.xixi="我是一只小小小小鸟！哦";
+    }
+}
+class Box {
+    constructor(name) {
+        this.name = name;
+        return new Desk();// 这里没有用this哦，直接返回一个全新的对象
+    }
+}
+var obj = new Box('小小喵');
+console.log(obj.xixi); // 我是一只小小小小鸟！哦
+console.log(obj.name); // undefined
+
+---class不存在变量提升，所以需要先定义再使用。因为ES6不会把类的声明提升到代码头部，但是ES5就不一样,ES5存在变量提升,可以先使用，然后再定义。
+// ES5可以先使用再定义,存在变量提升
+new A();
+function A(){}
+// ES6不能先使用再定义,不存在变量提升 会报错
+new B(); // B is not defined
+class B{}
+
+
+二.静态方法和静态属性 （关键字static）及继承（关键字extends）
+class Person {
+    static age = 20; // 静态属性
+    constructor(name) {
+        this.name = name;
+    }
+    static say() { // 静态方法
+        return `${this.age}是年龄呀`; // 静态方法中只能访问静态属性
+    }
+    static sing() {
+        return '在唱歌';
+    }
+}
+Person.prototype.x = 2;
+let c = new Person('小红');
+console.log(c.name); // 小红
+console.log(Person.say());  // 现在 say 方法是静态方法，不能被实例调用，会报错，只能 Person.say()去 调用，也就是说静态方法不会被实例继承；
+
+class Children extends Person { // extends关键字
+    constructor(name) {
+        super(name); // super方法去调用父类的构造方法 --这是super作为方法调用
+        console.log(super.x) // 2 --这是super作为对象调用，普通方法中指向父类的原型，在这里也就是（Person.prototype)
+    }
+    static study() {
+        console.log(super.sing()); // 在静态方法中，super指向父类，在这里也就是（Person）
+    }
+}
+let d = new  Children('小明');
+console.log(Children.sing()); // 在唱歌 父类的静态方法可以被子类继承
+console.log(d.name); // 唱歌
+
+--子类必须在 constructor 方法中调用 super 方法，否则新建实例就会报错。
+这是因为子类自己的this对象，必须先通过 父类的构造函数完成塑造，得到与父类同样的实例属性和方法，
+然后再对其进行加工，加上子类自己的实例属性和方法。如果不调用super方法，子类就得不到this对象。
+super虽然代表了父类A的构造函数，但是返回的是子类B的实例，即super内部的this指的是B的实例，因此super()在这里相当于A.prototype.constructor.call(this)。
+
+
+
+---注意：
+ES5的继承，实质是先创建了子类的实例对象 this, 然后再将 父类的方法添加到 this上面
+ES6的继承是先将父类实例对象的属性和方法，加到 this 上面（所以必须先调用 super 方法），然后再用子类的构造函数修改 this。
+--super
+作为函数调用，代表父类的构造函数
+作为对象调用，在普通方法中，指向父类的原型对象；在静态方法中，指向父类
+
+
+
+
+
+
