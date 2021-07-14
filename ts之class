@@ -1,0 +1,8 @@
+一.es6中的class
+class Person { // 类名首字母要大写
+    constructor(name) { //构造函数，实例化一个对象的时候调用，用来接收参数
+        this.name = name; // this指向实例对象
+    }
+}
+let c = new Person('小红');
+console.log(c.name); // 小红
