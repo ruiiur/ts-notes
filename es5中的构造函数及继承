@@ -1,0 +1,68 @@
+一.es5中的类和继承：
+---es5 中是构造类，也是构造函数，例如：
+  function Person(name) { // 构造函数的命名首字母要大写
+      this.name = name;  // 实例属性
+      this.sing = function() {  // 实例方法
+        console.log('我会唱歌');
+      }
+      //实例成员就是构造函数内部通过this添加的成员，实例成员只能通过实例化的对象来访问
+  }
+  Person.weight = 80; // 静态属性
+  Person.eat = function() { // 静态方法
+    console.log(this.weight);  // 80  静态方法中可以访问静态属性
+    console.log(this.age);  // undefined  静态方法中不可以访问非静态属性
+  };
+  Person.prototype.age = 20;  // 向构造函数原型中添加一个属性
+  Person.prototype.getName = function () {  // 向构造函数原型中添加一个方法
+      return this.name;
+  }
+  let c = new Person('张三');
+  console.log(c.name); // 张三
+  console.log(c.age); // 20
+  console.log(c.getName()); // 张三
+  console.log(Person.eat()); // 静态方法和静态属性都是自己类名.调用，无法实例.调用
+  console.log(c.__proto__ === Person.prototype); // true 实例的 __proto__ 属性，指向构造函数的原型
+  console.log(Person.prototype.constructor === Person); // true 指向构造函数的原型上的 constructor 属性， 指向构造函数本身
+  console.log(c.constructor === Person); // 在 new 一个新对象时都会默认生成一个constructor，并且该属性都指向构造函数
+  
+---es5 中的继承
+  a.对象冒充继承（构造函数继承）
+  可以继承构造属性里面的属性和方法
+  缺点是继承不了原型链上的属性和方法
+  function Chilren(name) {
+    Person.call(this, name);
+  }
+  let a = new Chilren('小红');
+  console.log(a.name); // 小红
+  console.log(a.age);  // undefined
+  
+  b.原型链继承
+  可以继承构造函数里面的属性和方法又可以继承原型链上的属性和方法
+  缺点是实例化子类的时候不能给父类传参
+  function Children() {
+  }
+  Children.prototype = new Person('小红');
+  let a = new Children();
+  console.log(a.name); // 小红
+  console.log(a.age);  // 20
+  
+  c.组合继承(对象冒充+原型链继承）
+  可以继承构造函数里面的属性和方法又可以继承原型链上的属性和方法
+  实例化子类的时候也能给父类传参
+  缺点是每次创建子类实例都执行了两次构造函数(Person.call()和new Person())，虽然这并不影响对父类的继承，
+  但子类创建实例时，原型中会存在两份相同的属性和方法，这并不优雅
+  function Children(name) {
+      Person.call(this, name);
+  }
+  Children.prototype = new Person('小红');
+  let a = new Children('小明');
+  console.log(a.name); // 小明
+  
+  d.寄生式组合继承
+  解决构造函数被执行两次的问题, 我们将指向父类实例改为指向父类原型, 减去一次构造函数的执行
+  function Children(name) {
+      Person.call(this, name);
+  }
+  Children.prototype = Object.create(Person.prototype);
+  let a = new Children('小明');
+  console.log(a.name); // 小明
