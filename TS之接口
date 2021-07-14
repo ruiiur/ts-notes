@@ -1,0 +1,67 @@
+---接口的作用
+在面向对象的编程中，接口是一种规范的定义，它定义了行为和动作的规范，在程序设计里面，接口起到一种限制和规范的作用，接口定义了某一批类需要遵守的规范，
+接口不关心这些内的内部状态数据，也不关心这些类里面的方法实现细节，它规定这些类必须提供这些方法，提供这些方法的类就可以满足实际需要。ts中的接口类似于
+java，同时还增加了更灵活的接口类型，包括属性，函数，可索引和类等。
+
+---因为interface这个概念在js中并没有，所以interface编译后并不会呈现到js中，只会进行静态的类型检查
+
+一.属性类型
+interface Animal {
+  color:string,
+  height:number
+}
+function getAnimalInfo(info:Animal):string{
+  return `这个小猫的颜色是${info.color}，高度是${info.height}`
+}
+let animalInfo = {
+  color: '红色',
+  height: 80
+}
+// 在外部定义的对象可以定义多余的值，直接传入的对象要完成符合接口的定义才可以
+// 参数的顺序可以不一样
+console.log(getAnimalInfo(animalInfo)); // 这个小猫的颜色是红色，高度是80
+
+---接口的可选属性
+interface Animal {
+  color:string,
+  height?:number
+}
+function getAnimalInfo(info:Animal):string{
+  if (info.height) {
+    return `这个小猫的颜色是${info.color}，高度是${info.height}`
+  }
+  else {
+    return `这个小猫的颜色是${info.color}`
+  }
+}
+let animalInfo = {
+  color: '红色'
+}
+console.log(getAnimalInfo(animalInfo)); // 这个小猫的颜色是红色
+
+---ts封装ajax方法
+function ajaxFun(params) {
+    var xml = new XMLHttpRequest();
+    xml.open(params.type, params.url, true);
+    xml.onreadystatechange = function () {
+        if (xml.readyState === 4) {
+            console.log('数据正在加载中');
+            if (xml.status === 200) {
+                console.log('请求成功');
+                if (params.dataType === 'json') {
+                    JSON.parse(xml.responseText);
+                }
+                else {
+                    console.log(xml.responseText);
+                }
+            }
+        }
+    };
+    xml.send();
+}
+var params = {
+    url: 'http://www.baidu.com',
+    type: 'GET',
+    dataType: 'json'
+};
+ajaxFun(params);
