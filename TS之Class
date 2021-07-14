@@ -1,0 +1,162 @@
+一.ts中类的定义及继承
+class Person {
+  static age:number = 20; // 静态属性
+  name:string;
+  constructor(name:string) {
+      this.name = name;
+  }
+  static say():string {
+      return `${this.age}是年龄呀`; // 静态方法中只能访问静态属性
+  }
+  sing():string {
+      return '在唱歌';
+  }
+}
+let c = new Person('小红');
+console.log(c.name); // 小红
+console.log(Person.say());  // 20是年龄呀 现在 say 方法是静态方法，不能被实例调用，会报错，只能 Person.say()去 调用；
+console.log(c.sing());  // 在唱歌
+
+class Children extends Person {
+  height:number;
+  constructor(name:string, height:number) {
+      super(name);
+      this.height = height;
+  }
+  static study():void {
+      console.log(super.say()); // 在静态方法中，super指向父类，在这里也就是（Person）
+  }
+}
+let d = new  Children('小明', 100);
+console.log(Children.say()); // 20是年龄呀 静态方法可以继承
+console.log(d.name); // 小明
+console.log(d.height); // 100
+
+
+二.类的修饰符
+---public 共有的，没有修饰符的属性和方法默认是public；
+
+---private 私有的
+class Person {
+  private brith:string = '2020/2/22'; // 私有属性
+  constructor(name:string,) {
+      this.name = name;
+  }
+  sing():void {
+     console.log(this.brith); // 私有属性只有在类的内部才能被访问，无法在类的外部通过类名或者实例对象访问
+  }
+}
+let c = new Person('小红');
+console.log(c.sing()); // 2020/2/22
+
+---protected 被保护的
+class Person {
+  name:string;
+  protected brith:string;
+  constructor(name:string,brith: string) {
+      this.name = name;
+      this.brith = brith;
+  }
+  say():string{
+    return this.brith; // protected 修饰的属性，可以在类中被访问
+  }
+}
+let c = new Person('小红', '2020/2/22');
+console.log(c.name); // 小红
+console.log(c.say());  // 2020/2/22
+console.log(c.brith);  // 报错，protected 修饰的属性，不能被实例对象访问
+
+class Children extends Person {
+  height:number;
+  constructor(name:string, brith:string, height:number) {
+      super(name, brith);
+      this.height = height;
+  }
+  study():string {
+      return this.brith // protected 修饰的属性，也可以在子类中被访问
+  }
+}
+let d = new  Children('小明', '2022/3/22', 100);
+console.log(d.study()); // 2022/3/22
+
+--readonly
+class Octopus {
+    readonly name: string;
+    constructor (theName: string) {
+        this.name = theName;
+    }
+}
+let dad = new Octopus("Man with the 8 strong legs");
+dad.name = "Man with the 3-piece suit"; // 错误! name 是只读的，不能被重新赋值
+
+---注意
+Ts有公共成员（public）修饰符；Js没有该修饰符，但可以在构造函数constructor内直接使用this定义公共成员，用于生成每个实例对象的属性。
+Ts有私有成员（private）修饰符；Js的私有成员修饰符是（#），该成员只能在当前类中使用，TS与JS没有区别。
+Ts有受保护成员（protected）修饰符；Js没有该修饰符，也没有对应的成员语法。在Ts中受保护成员可以被当前类或子类访问，可以在当前类或子类中使用，但不能被实例对象在外部访问。
+Ts有静态成员（static）修饰符；Js中也有同样的修饰符，该成员最终被解析到类的自身属性上（解析成ES5的话就是函数的属性），静态属性可以被类名直接在任何地方引用。
+Ts有只读成员（readonly）修饰符；Js中没有该修饰符，但是可以通过属性访问器get来实现。
+
+
+三.抽象类（abstract）
+ts中的抽象类是提供其他类继承的基类，不能直接被实例化
+用abstract关键字定义抽象类和抽象方法，抽象类中的抽象方法不包含具体实现，并且必须在派生类中实现
+abstract class Person {
+  name:string;
+  constructor(name:string) {
+      this.name = name;
+  }
+  abstract say():string;
+}
+class Children extends Person {
+  height:number;
+  constructor(name:string, height:number) {
+      super(name);
+      this.height = height;
+  }
+  say():string {
+      return this.name
+  }
+}
+let d = new  Children('小明', 100);
+console.log(d.say()); // 小明
+console.log(d.height); // 100
+
+
+四.多态
+父类定义一个方法不去实现，让继承它的子类去实现，每个子类有不同的表现，多态属于继承的一种
+多态--重写方法，不执行父类方法
+class Person {
+  name:string;
+  constructor(name:string) {
+      this.name = name;
+  }
+  say():void {
+    console.log('我喜欢画画');
+  };
+}
+class Children extends Person {
+  height:number;
+  constructor(name:string, height:number) {
+      super(name);
+      this.height = height;
+  }
+  say():void {
+    console.log(`${this.name}喜欢读书`);
+  }
+}
+let d = new  Children('小明', 100);
+d.say(); // 小明喜欢读书
+
+class Young extends Person {
+  height:number;
+  constructor(name:string, height:number) {
+      super(name);
+      this.height = height;
+  }
+  say():void {
+    console.log(`${this.name}喜欢挣钱`);
+  }
+}
+let y = new  Young('小李', 200);
+y.say(); // 小李喜欢挣钱
+
