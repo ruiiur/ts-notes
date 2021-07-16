@@ -1,0 +1,6 @@
+export导出  import 导入
+export default 默认导出
+每个模块都可以有一个默认导出，默认导出使用关键字default，并且每个模块只能够有一个默认导出
+
+
+命名空间namespace
