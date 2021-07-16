@@ -1,0 +1,89 @@
+泛型:泛型就是解决类，接口，方法的复用性，以及对不特定数据类型的支持
+接口:在面向对象的编程中，接口是一种规范的定义，它定义了行为和动作的规范
+
+一.泛型函数
+function getInfo<T>(name:T):T {
+  return name;
+}
+console.log(getInfo(123)); // 123
+console.log(getInfo('name')); // name
+console.log(getInfo({a: 1, b: 2})); // { a: 1, b: 2 }
+
+
+二.泛型类
+class User <T>{
+  userName: T;
+  passWord: T;
+  constructor (userName: T, passWord : T) {
+    this.userName = userName;
+    this.passWord = passWord;
+  }
+  getName(): T {
+    return this.userName;
+  }
+}
+let a = new User<number>(111, 222);
+let b = new User<string>('小明', 'abcd');
+console.log(a.getName()); // 111
+console.log(b.getName()); // 小明
+
+
+三.泛型接口
+interface UserInfo<T> {
+  userName: T;
+  passWord: T;
+  getName():T;
+}
+
+class User<T> implements UserInfo<T> { // 要实现泛型接口在，这个类也应该是泛型类
+  userName: T;
+  passWord: T;
+  constructor (userName: T, passWord : T) {
+    this.userName = userName;
+    this.passWord = passWord;
+  }
+  getName(): T {
+    return this.userName;
+  }
+}
+let a = new User<number>(333, 222);
+let b = new User<string>('小红', 'abcd');
+console.log(a.getName()); // 333
+console.log(b.getName()); // 小红
+
+
+四.定义一个操作数据库的库
+interface DBI<T> {
+  add(info: T): boolean;
+  delete(id: number): boolean;
+  get(id: number): T[];
+  update(info: T,id: number): boolean;
+}
+
+class MySQL<T> implements DBI<T> {
+
+  add(info: T): boolean {
+    console.log(info);
+    return true;
+  }
+  delete(id: number): boolean {
+    return true;
+  }
+  get(id: number): T[] {
+    throw new Error("Method not implemented.");
+  }
+  update(info: T,id: number): boolean {
+    throw new Error("Method not implemented.");
+  }
+}
+
+class User {
+  userName: string | undefined;
+  passWord: string | undefined
+}
+let u = new User();
+u.userName = '张三';
+u.passWord = '123';
+
+let m = new MySQL<User>(); // 类可以作为参数来约束数据传入的类型
+m.add(u); //User { userName: '张三', passWord: '123' }
