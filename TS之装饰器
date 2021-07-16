@@ -1,0 +1,209 @@
+装饰器（Decorator）：装饰器是一种特殊类型的声明，它能够被附加到类声明，方法，属性或参数上，可以修改类的行为；
+通俗的讲，装饰器就是一个方法，可以注入到类，方法，属性参数上来扩展类，属性，方法，参数的功能；
+常见的装饰器有：类装饰器，方法装饰器，属性装饰器，参数装饰器；
+装饰器的写法：普通装饰器（无法传参），装饰器工厂（可传参）；
+装饰器是过去几年中js最大的成就之一，已是ES7的标准特性之一。
+
+一.类装饰器：类装饰器在类声明之前被声明（紧跟着类声明），类装饰器应用于构造函数，可以用来监视，修改或替换类定义，传入一个参数。
+类装饰器表达式会在运行时当作函数被调用，类的构造函数作为其唯一的参数。
+
+// 普通装饰器的写法
+function logClass(params: any){
+  // params就是当前类
+  console.log(params, 'params');
+  params.prototype.x = '动态扩展的属性';
+  params.prototype.run = function() {
+    console.log('我是一个run方法');
+  }
+}
+
+@logClass   // 普通装饰器，无法传参
+class HttpClient {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  getName():void {
+    console.log(this.name);
+  }
+}
+
+let h:any = new HttpClient('小红');
+console.log(h.x); // 动态扩展的属性
+console.log(h.run()); // 我是一个run方法
+
+// 装饰器工厂的写法
+function logClass(params: string){
+  console.log(params); // hello
+  return function (target: any) {
+    target.prototype.x = '动态扩展的属性';
+    target.prototype.run = function() {
+      console.log('我是一个run方法');
+    }
+  }
+}
+
+@logClass('hello') // 装饰器工厂可以传参
+class HttpClient {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  getName():void {
+    console.log(this.name);
+  }
+}
+
+let h:any = new HttpClient('小红');
+console.log(h.x); // 动态扩展的属性
+console.log(h.run()); // 我是一个run方法
+
+
+
+
+二.属性装饰器
+属性装饰器表达式会在运行时当作函数被调用，传入下列2个参数：
+1.对于静态成员来说是类的构造函数，对于实例成员是类的原型对象；
+2.成员的名称
+
+function logAttr(params: string){
+  console.log(params); // hello
+  return function (target: any, attrName: string) {
+    console.log(attrName); // name
+    target[attrName] = '小明';
+  }
+}
+
+class HttpClient {
+  @logAttr('hello')
+  public name: string | undefined;
+  getName():void {
+  }
+}
+  
+let h:any = new HttpClient();
+console.log(h.name); // 小明
+
+
+
+三.方法装饰器
+它会被应用到方法的属性描述符上，可以用来监视，修改或者替换方法定义。
+方法装饰器会在运行时传入下面3个参数:
+1.对于静态成员来说是类的构造函数，对于实例成员是类的原型对象；
+2.成员的名称
+3.成员的属性描述符
+function logMethod(params: string){
+  console.log(params); // hello
+  return function (target: any, methodName: string, desc: any) {
+    console.log(methodName) // getName
+    // desc 是方法的描述      desc.value就是该方法
+    // target.methodName = function() { // 这样修改方法是不行的
+    //   console.log('这是修改后的方法');
+    // };
+    desc.value = function() { // 这样修改是可行的
+      console.log('这是修改后的方法');
+    }
+  }
+}
+
+class HttpClient {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  @logMethod('hello')
+  getName():void {
+    console.log(this.name);
+  }
+}
+
+let h:any = new HttpClient('小红');
+h.getName(); // 这是修改后的方法
+
+
+
+四.方法参数装饰器
+参数装饰器表达式会在运行时当作函数被调用，可以使用参数装饰器为类的原型增加一些元素数据，传入下面3个参数：
+1.对于静态成员来说是类的构造函数，对于实例成员是类的原型对象；
+2.方法的名称
+3.参数在函数参数列表中的索引
+
+function logParams(params: string){
+  console.log(params); // hello
+  return function (target: any, methodName: string, index: number) {
+    console.log(methodName, index) // getName 0
+  }
+}
+
+class HttpClient {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  getName(@logParams('hello') smallName:string):void {
+    console.log(smallName);
+  }
+}
+
+let h:any = new HttpClient('小红');
+h.getName('hh'); // hh
+
+
+
+五.装饰器执行顺序
+function logClass1(params:any){
+  console.log('类装饰器1')
+}
+function logClass2(params:any){
+  console.log('类装饰器2')
+}
+function logParams1(target: any, methodName: string, index: number){
+  console.log('方法参数装饰器1')
+}
+function logParams2(target: any, methodName: string, index: number){
+  console.log('方法参数装饰器2')
+}
+function logMethod1(target: any, methodName: string, desc: any){
+  console.log('方法装饰器1')
+}
+function logMethod2(target: any, methodName: string, desc: any){
+  console.log('方法装饰器2')
+}
+function logAttr(target: any, attr: string){
+  console.log('属性装饰器')
+}
+@logClass1
+@logClass2
+class HttpClient {
+  @logAttr
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  @logMethod1
+  @logMethod2
+  getName(@logParams1 params1:string, @logParams2 params2: string):void {
+    console.log(params1);
+  }
+}
+
+let h:any = new HttpClient('小红');
+console.log(h.name);
+
+执行后结果：
+属性装饰器
+方法参数装饰器2
+方法参数装饰器1
+方法装饰器2
+方法装饰器1
+类装饰器2
+类装饰器1
+小红
+
+结论：
+属性装饰器 > 方法参数装饰器 > 方法装饰器 > 类装饰器
+如果有多个同样类型的装饰器，它会先执行后面的
+
+
+
+
