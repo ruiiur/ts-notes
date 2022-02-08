@@ -17,7 +17,7 @@ Symbol 方法接收一个参数，表示对生成的 symbol 值的一种描述, 
      console.log(foo === bar); // false
 Symbol.for 方法可以检测上下文中是否已经存在使用该方法且相同参数创建的 symbol 值，如果存在则返回已经存在的值，如果不存在则新建
      const foo = Symbol('foo');
-     const bar = Symbol('foo');
+     const bar = Symbol.for('foo');
      console.log(foo === bar); // true
 Symbol.keyFor 方法返回一个使用 Symbol.for 方法创建的 symbol 值的 key
     const foo = Symbol.for("fff");
@@ -43,7 +43,7 @@ Symbol 的使用场景：
 4.数组类型Array（有以下两种方式定义， 数组里面每个元素都是相同的类型）
  ------let arr:number[] = [1,2,3];
  ------let arr:Array<number> = [1,2,3]  数组泛型
-5.元组tuple（数组的一种，元素类型与元素位置相对应）
+5.元组tuple（数组的一种，元素类型与元素位置相对应,且不能缺少）
  ------let arr:[number, string] = [1,'1']
 6.枚举enum
   enum Color {
@@ -66,7 +66,7 @@ Symbol 的使用场景：
   a = false;
   a.length; // 因为类型是 any ， 不会有任何判断，所以这里并不会报错
 10. unknown (相当于严格意义上的any）
-    因为 any 类型的熟悉可以随意调用属性和方法，很不安全。这时候可以用 unknown，unknown 中不能随意调用属性和方法，如果要调用，可以用类型断言，例如：
+    因为 any 类型的属性可以随意调用属性和方法，很不安全。这时候可以用 unknown，unknown 中不能随意调用属性和方法，如果要调用，可以用类型断言，例如：
      let a: unknown = 1;
      a = false;
      a.length; // 因为类型是 unknown ， 不可以随意调用属性和方法，所以这里会报错
@@ -83,6 +83,12 @@ Symbol 的使用场景：
       throw new Error(message);
     }
 13.Object 对象
+  基本上使用花括号并且以键值对形式实现的数据都属于对象类型
+  const person = {
+    name: "sss",
+    age: 18
+  }
+  console.log(person.gender) // 会报错，因为 ts 中不可以调用未定义的变量
 
 
 
